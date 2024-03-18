@@ -4,6 +4,7 @@ from django.shortcuts import (
     get_object_or_404,
 )
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 
 from store.models import Product
 from .models import Cart, CartItem
@@ -21,6 +22,9 @@ def _cart_id(request):
         
         
 def add_cart(request, product_id):
+    color = request.GET['color']
+    size = request.GET['size']
+    
     product = Product.objects.get(id=product_id)
     
     try:

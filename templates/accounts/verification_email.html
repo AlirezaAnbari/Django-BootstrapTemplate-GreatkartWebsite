@@ -1,10 +1,14 @@
-{% autoescape off %}
-
-Hi {{ user.first_name }},
-Please click on below link to confirm your registration.
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
-
-
-If you think it's not you, please ignore this email.
-
-{% endautoescape %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+</head>
+<body>
+    <p>Hi {{ user.first_name }},</p>
+    <p>Please click on the link below to confirm your registration:</p>
+    <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}">Confirm Registration</a>
+    <p>If you believe this email was sent to you in error, please ignore it.</p>
+</body>
+</html>

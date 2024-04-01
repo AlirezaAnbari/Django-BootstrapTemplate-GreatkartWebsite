@@ -9,12 +9,13 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
+from django.utils.html import strip_tags
 
 from .forms import (
     RegistrationForm,
 )
 from .models import Account
-from .utils import token_generator
+from .utils import email_token_generator
 
 
 def register(request):
@@ -46,12 +47,13 @@ def register(request):
                 'user': user,
                 'domain': current_site,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),          # nobody can see the primary key.
-                # 'token': default_token_generator.make_token(user)
-                'token': token_generator.make_token(user)
+                'token': default_token_generator.make_token(user)
+                # 'token': email_token_generator.make_token(user)
                 
             })
             to_email = email
             send_email = EmailMessage(mail_subject, message, to=[to_email])
+            send_email.content_subtype = 'html'
             send_email.send()
             
             # messages.success(request, 'We sent you a verification email.Please verify it.')

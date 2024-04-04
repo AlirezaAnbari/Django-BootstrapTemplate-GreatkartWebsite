@@ -11,7 +11,7 @@ from store.models import Product, Variation
 from .models import Cart, CartItem
 
 
-# Fetch the cart id from the browser.
+# Fetch the cart id from the browser.(store session)
 def _cart_id(request):
     cart = request.session.session_key
     if not cart:

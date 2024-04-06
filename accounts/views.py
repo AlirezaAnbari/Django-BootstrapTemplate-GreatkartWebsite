@@ -81,7 +81,7 @@ def login(request):
         if user is not None:
             # user have a cart before login condition.
             try:
-                cart = Cart.objects.get(cart_id=_cart_id(request))
+                cart = Cart.objects.get(cart_id=_cart_id(request))       # Create a sessionID
                 is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
                 if is_cart_item_exists:
                     cart_item = CartItem.objects.filter(cart=cart)

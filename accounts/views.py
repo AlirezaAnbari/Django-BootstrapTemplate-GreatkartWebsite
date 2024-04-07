@@ -11,6 +11,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from django.utils.html import strip_tags
 
+import requests
+import requests.utils
+
 from .forms import (
     RegistrationForm,
 )
@@ -122,10 +125,24 @@ def login(request):
             
             auth.login(request, user)
             messages.success(request, 'You are now logged in.')
-            return redirect('dashboard')
+            
+            url = request.META.get('HTTP_REFERER')
+            try:
+                print('URL -> ', url)
+                query = requests.utils.urlparse(url).query            # next=/cart/checkout/                  
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)
+            except:
+                return redirect('dashboard')
+            
+            
         else:
             messages.error(request, 'Invalid login credentials.')
+            
             return redirect('login')
+            
         
         
     return render(request, 'accounts/login.html')

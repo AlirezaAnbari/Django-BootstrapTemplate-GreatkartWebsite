@@ -8,6 +8,13 @@ from .models import Order
 
 
 def payments(request):
+    
+    
+    # Store transaction details inside payment model. -> [user,payment_id,payment_method,amount_paid,status]
+    
+    # Move cart items to order product table.
+    
+    # Reduce the quantity of the sold products.
     return render(request, 'orders/payments.html')
     
     

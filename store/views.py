@@ -1,15 +1,18 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import (
     EmptyPage,
     PageNotAnInteger,
     Paginator,
 )
 from django.db.models import Q
+from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect
 
-from .models import Product
+from .models import Product, ReviewRating
 from category.models import Category
 from carts.models import CartItem
 from carts.views import _cart_id
+from .forms import ReviewForm
 
 
 def store(request, category_slug=None):
@@ -73,3 +76,42 @@ def search(request):
     }
 
     return render(request, 'store/store.html', context)
+
+
+def submit_review(request, product_id):
+    current_url = request.META.get('HTTP_REFERER')
+    
+    if request.method == 'POST':
+        try:
+            reviews = ReviewRating.objects.get(user__id=request.user.id, product__id=product_id)
+            form = ReviewForm(request.POST, instance=reviews)                                    # Update review
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Thank you! Your review has been updated.')
+            else:
+                messages.error(request, 'Error updating your review. Please check the form.')
+                # return redirect(current_url)
+            return HttpResponseRedirect(current_url)
+        
+        except ReviewRating.DoesNotExist:
+            form = ReviewForm(request.POST)                                                      # Create a new review
+            if form.is_valid():
+                data = ReviewRating()
+                data.subject = form.cleaned_data['subject']
+                data.rating = form.cleaned_data['rating']
+                data.review = form.cleaned_data['review']
+                data.ip = request.META.get('REMOTE_ADDR')
+                data.product_id = product_id
+                data.user_id = request.user.id
+                data.save()
+                
+                messages.success(request, "Thank you! You review has been submitted successfully.")
+                # return redirect(current_url)
+            else:
+                messages.error(request, 'Error submitting your review. Please check the form.')
+                
+            return HttpResponseRedirect(current_url)
+
+        # except Exception as e:
+        #     messages.error(request, f'Error occurred: {str(e)}')
+        #     return redirect(url)

@@ -47,6 +47,7 @@ def store(request, category_slug=None):
 
 
 def product_detail(request, category_slug, product_slug):
+    # Details of product
     try:
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
         in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), product=single_product).exists()
@@ -55,14 +56,18 @@ def product_detail(request, category_slug, product_slug):
     
     # Check if the user purchase the product or not.
     try:
-        order_product = OrderProduct.objects.filter(user=request.user, product=single_product.id).exists()
+        order_product = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
     except OrderProduct.DoesNotExist:
         order_product = None
         
+    # Get the reviews
+    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
+    
     context = {
         'single_product': single_product,
         'in_cart': in_cart,
         # 'order_product': order_product,
+        'reviews': reviews
     }
     
     return render(request, 'store/product_detail.html', context)

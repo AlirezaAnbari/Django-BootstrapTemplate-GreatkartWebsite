@@ -102,6 +102,14 @@
       <br>
       {% if user.is_authenticated %}
         <input type="submit" value="Submit Review" class="btn btn-primary">
+
+        <!-- active this section when the bank payment gateway implement. -->
+        <!-- {% if order_products %} -->
+        <!-- <input type="submit" value="Submit Review" class="btn btn-primary"> -->
+        <!-- {% else %}
+          <p>You must purchase this product to post a review.</p>
+        {% endif %} -->
+
       {% else %}
       <p>You must be logged in to post a review</p><span><a href="{% url 'login' %}">Login Now</a></span>
       {% endif %}

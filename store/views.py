@@ -55,9 +55,12 @@ def product_detail(request, category_slug, product_slug):
         raise e
     
     # Check if the user purchase the product or not.
-    try:
-        order_product = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
-    except OrderProduct.DoesNotExist:
+    if request.user.is_authenticated:                  # if condition, handle AnonymousUser error.
+        try:
+            order_product = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
+        except OrderProduct.DoesNotExist:
+            order_product = None
+    else:
         order_product = None
         
     # Get the reviews

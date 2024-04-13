@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -16,8 +16,10 @@ import requests.utils
 
 from .forms import (
     RegistrationForm,
+    UserProfileForm,
+    UserForm,
 )
-from .models import Account
+from .models import Account, UserProfile
 from .utils import email_token_generator
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
@@ -266,9 +268,24 @@ def my_orders(request):
 
 
 def edit_profile(request):
+    user_profile_instance  = get_object_or_404(UserProfile, user=request.user)
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile_instance)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect('edit_profile')
+    else:
+        # If the request not a POST, then render the form with the data.
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=user_profile_instance)
     
     context = {
-        
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'user_profile': user_profile_instance,
     }
     
     return render(request, 'accounts/edit_profile.html', context)

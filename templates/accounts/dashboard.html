@@ -13,7 +13,7 @@
 		<article class="card">
 		<header class="card-header">
 			<strong class="d-inline-block mr-3">Logged in as:</strong>
-			<span>{{ user.full_name }}</span>
+			<span>{{ user_profile.user.full_name }}</span>
 		</header>
 		<div class="card-body">
 			<div class="row">
@@ -23,7 +23,7 @@
 					<div class="card-body">
 						<h5 class="card-title">Total Orders</h5>
 						<h4>{{ orders_count }}</h4>
-						<a href="#">View Orders</a>
+						<a href="{% url 'my_orders' %}">View Orders</a>
 					</div>
 				</div>
 			</div>
@@ -31,8 +31,8 @@
 				<div class="card" style="text-align:center;">
 					<div class="card-body">
 						<img src="https://www.w3schools.com/howto/img_avatar.png" alt="User Profile Picture" width="50" height="50" style="border-radius:50%;">
-						<p class="mb-0">example@gmail.com</p>
-						<p>091211111111</p>
+						<p class="mb-0">{{ user_profile.user.email }}</p>
+						<p>{{ user_profile.user.phone_number }}</p>
 					</div>
 				</div>
 			</div>

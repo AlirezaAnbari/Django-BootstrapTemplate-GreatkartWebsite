@@ -23,7 +23,7 @@ from .models import Account, UserProfile
 from .utils import email_token_generator
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
-from orders.models import Order
+from orders.models import Order, OrderProduct
 
 
 def register(request):
@@ -188,8 +188,11 @@ def dashboard(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
     orders_count = orders.count()
     
+    user_profile = UserProfile.objects.get(user_id=request.user.id)
+    
     context = {
         'orders_count': orders_count,
+        'user_profile': user_profile,
     }
     
     return render(request, 'accounts/dashboard.html', context)
@@ -324,3 +327,20 @@ def change_password(request):
             return redirect('change_password')
         
     return render(request, 'accounts/change_password.html')
+
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+    
+    sub_total = 0
+    for i in order_detail:
+        sub_total += i.product * i.quantity
+    
+    context = {
+        'order_detail': order_detail,
+        'order': order,
+        'sub_total': sub_total,
+    }
+    
+    return render(request, 'accounts/order_detail.html', context)
